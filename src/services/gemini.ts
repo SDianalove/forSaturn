@@ -12,7 +12,9 @@ export async function generateDianaPoem(mood: string = "romantic") {
       Her birthday is November 17th. 
       The theme should be cosmic, stars, and infinite love. 
       The mood should be ${mood}. 
-      Make it feel personal and heartfelt.`,
+      Make it feel personal and heartfelt.
+      
+      IMPORTANT: Return ONLY the poem text. Do not include any introductory phrases, explanations, or conclusions. Just the verses.`,
       config: {
         temperature: 0.8,
         topP: 0.9,

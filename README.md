@@ -1,20 +1,24 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Diana's Cosmic Love 🌌
 
-# Run and deploy your AI Studio app
+Специальный сайт-подарок для Дианы (Сатурняшки).
 
-This contains everything you need to run your app locally.
+## Особенности
+- Космический дизайн в синих тонах.
+- Генератор стихов на базе ИИ (Gemini API).
+- Секретные пасхалки (нажми на имя "DIANA" или на звездочку в углу).
+- Адаптивный дизайн.
 
-View your app in AI Studio: https://ai.studio/apps/f91c4880-1ab1-4ade-8fab-cd46c33bf031
+## Как запустить локально
+1. Клонируйте репозиторий.
+2. Установите зависимости: `npm install`.
+3. Создайте файл `.env` в корне проекта и добавьте туда свой ключ API:
+   ```env
+   VITE_GEMINI_API_KEY=ваш_ключ_здесь
+   ```
+4. Запустите проект: `npm run dev`.
 
-## Run Locally
+## Как деплоить на GitHub Pages
+1. Соберите проект: `npm run build`.
+2. Загрузите содержимое папки `dist` в ветку `gh-pages` или используйте GitHub Actions для автоматического деплоя.
 
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+**Важно:** Ключ API будет встроен в клиентский код при сборке. Если репозиторий публичный, будьте осторожны с лимитами и безопасностью ключа.

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diana's Cosmic Love</title>
+    <!-- Подключаем Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Подключаем шрифты -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cosmic-blue: #0a192f;
+            --saturn-gold: #f4d03f;
+        }
+        body {
+            background-color: var(--cosmic-blue);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+        }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        
+        .stars-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .saturn-bg {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%; height: 120%;
+            object-fit: contain;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: -1;
+            filter: blur(2px);
+            animation: float-slow 10s infinite ease-in-out;
+        }
+        @keyframes float-slow {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-20px); }
+        }
+        .meow-text {
+            position: fixed;
+            pointer-events: none;
+            color: var(--saturn-gold);
+            font-weight: bold;
+            z-index: 100;
+            animation: meow-fade 1.5s forwards ease-out;
+        }
+        @keyframes meow-fade {
+            0% { opacity: 0; transform: translateY(0) scale(0.5); }
+            20% { opacity: 1; transform: translateY(-20px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
+        }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- Подключаем React и библиотеки через ESM -->
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18",
+            "react-dom": "https://esm.sh/react-dom@18",
+            "framer-motion": "https://esm.sh/framer-motion",
+            "lucide-react": "https://esm.sh/lucide-react",
+            "@google/genai": "https://esm.sh/@google/genai"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import React, { useState, useEffect, useMemo } from 'react';
+        import ReactDOM from 'react-dom';
+        import { motion, AnimatePresence } from 'framer-motion';
+        import { Heart, Stars, Dog, Sparkles, Moon, RefreshCw, Calendar } from 'lucide-react';
+        import { GoogleGenAI } from '@google/genai';
+
+        // ВСТАВЬ СВОЙ API КЛЮЧ ЗДЕСЬ ДЛЯ GITHUB
+        const API_KEY = "ТВОЙ_КЛЮЧ_GEMINI"; 
+
+        const ai = new GoogleGenAI({ apiKey: API_KEY });
+
+        async function generatePoem(mood) {
+            try {
+                const response = await ai.models.generateContent({
+                    model: "gemini-1.5-flash", // Используем стабильную модель для веба
+                    contents: `Напиши красивое короткое романтичное стихотворение на русском для девушки по имени Диана. 
+                    Ее ники: Сатурн, Сатурняшка. Она любит собак. День рождения 17 ноября. 
+                    Тема: космос, звезды, бесконечная любовь. Настроение: ${mood}.
+                    
+                    ВАЖНО: Выведи ТОЛЬКО текст стихотворения. Без вступлений, пояснений и лишних слов. Только сами стихи.`
+                });
+                return response.candidates[0].content.parts[0].text;
+            } catch (e) {
+                return "Звезды сегодня молчат, но мое сердце поет о тебе, Диана...";
+            }
+        }
+
+        const StarBackground = () => {
+            const stars = useMemo(() => Array.from({ length: 100 }).map((_, i) => ({
+                id: i,
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                size: Math.random() * 2 + 1,
+                duration: `${Math.random() * 3 + 2}s`,
+                delay: `${Math.random() * 5}s`,
+            })), []);
+
+            return React.createElement('div', { className: 'stars-container' },
+                stars.map(star => React.createElement('div', {
+                    key: star.id,
+                    className: 'star',
+                    style: {
+                        top: star.top,
+                        left: star.left,
+                        width: `${star.size}px`,
+                        height: `${star.size}px`,
+                        '--duration': star.duration,
+                        animationDelay: star.delay
+                    }
+                }))
+            );
+        };
+
+        const App = () => {
+            const [poem, setPoem] = useState('Нажми кнопку, чтобы звезды заговорили...');
+            const [isGenerating, setIsGenerating] = useState(false);
+            const [meows, setMeows] = useState([]);
+
+            const triggerMeow = (e) => {
+                const newMeow = { id: Date.now(), x: e.clientX, y: e.clientY };
+                setMeows(prev => [...prev, newMeow]);
+                setTimeout(() => setMeows(prev => prev.filter(m => m.id !== newMeow.id)), 1500);
+            };
+
+            const handleGenerate = async (mood) => {
+                setIsGenerating(true);
+                const text = await generatePoem(mood);
+                setPoem(text);
+                setIsGenerating(false);
+            };
+
+            return React.createElement('div', { className: 'min-h-screen relative' },
+                React.createElement(StarBackground),
+                
+                // Meow Layer
+                meows.map(m => React.createElement('div', {
+                    key: m.id,
+                    className: 'meow-text',
+                    style: { left: m.x, top: m.y }
+                }, 'Мяу! 🐾')),
+
+                // Nav
+                React.createElement('nav', { className: 'fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center backdrop-blur-md bg-opacity-30 border-b border-white/5' },
+                    React.createElement('div', { className: 'text-xl font-display font-bold flex items-center gap-2' },
+                        React.createElement(Moon, { className: 'w-5 h-5 text-yellow-400 fill-yellow-400' }),
+                        React.createElement('span', null, 'DIANA')
+                    ),
+                    React.createElement('div', { className: 'flex gap-6 text-sm opacity-70' },
+                        React.createElement('a', { href: '#about' }, 'О ней'),
+                        React.createElement('a', { href: '#poems' }, 'Стихи'),
+                        React.createElement('a', { href: '#confession' }, 'Признание')
+                    )
+                ),
+
+                // Hero
+                React.createElement('section', { className: 'min-h-screen flex flex-col items-center justify-center text-center pt-20 relative px-6' },
+                    React.createElement('img', { 
+                        src: 'https://images-assets.nasa.gov/image/PIA08361/PIA08361~large.jpg',
+                        className: 'saturn-bg'
+                    }),
+                    React.createElement(motion.div, { 
+                        initial: { opacity: 0, y: 20 }, 
+                        animate: { opacity: 1, y: 0 },
+                        transition: { duration: 1 }
+                    },
+                        React.createElement('h1', { 
+                            className: 'text-7xl md:text-9xl font-display font-bold tracking-tighter cursor-pointer hover:scale-105 transition-transform',
+                            onClick: triggerMeow
+                        }, 'DIANA'),
+                        React.createElement('p', { className: 'text-xl md:text-2xl font-serif italic text-blue-200/80 mt-4' }, 
+                            'Моя вселенная, мой Сатурн, моя Диана.'
+                        )
+                    )
+                ),
+
+                // About
+                React.createElement('section', { id: 'about', className: 'py-20 px-6 max-w-5xl mx-auto grid md:grid-cols-2 gap-12' },
+                    React.createElement('div', { className: 'space-y-6' },
+                        React.createElement('div', { className: 'glass-card p-8' },
+                            React.createElement('div', { className: 'flex items-center gap-3 text-yellow-400 mb-2' },
+                                React.createElement(Calendar, { className: 'w-6 h-6' }),
+                                React.createElement('h3', { className: 'font-bold' }, '17 Ноября')
+                            ),
+                            React.createElement('p', { className: 'opacity-70' }, 'День, когда мир стал ярче. Твой день рождения — праздник красоты.')
+                        ),
+                        React.createElement('div', { className: 'glass-card p-8' },
+                            React.createElement('div', { className: 'flex items-center gap-3 text-blue-400 mb-2' },
+                                React.createElement(Dog, { className: 'w-6 h-6' }),
+                                React.createElement('h3', { className: 'font-bold' }, 'Любительница собачек')
+                            ),
+                            React.createElement('p', { className: 'opacity-70' }, 'Твоя доброта к маленьким хвостикам делает тебя особенной.')
+                        )
+                    ),
+                    React.createElement('div', { className: 'glass-card p-8 flex flex-col items-center justify-center text-center' },
+                        React.createElement(Heart, { className: 'w-16 h-16 text-red-500 fill-red-500 mb-4 animate-pulse' }),
+                        React.createElement('h3', { className: 'text-2xl font-bold mb-2' }, 'Сатурняшка'),
+                        React.createElement('p', { className: 'opacity-60' }, 'Самый прекрасный ник во всей галактике')
+                    )
+                ),
+
+                // Poems
+                React.createElement('section', { id: 'poems', className: 'py-20 px-6 max-w-4xl mx-auto text-center' },
+                    React.createElement('h2', { className: 'text-4xl font-display font-bold mb-8' }, 'Стихи для тебя'),
+                    React.createElement('div', { className: 'glass-card p-8 md:p-12' },
+                        React.createElement('div', { className: 'flex flex-wrap justify-center gap-4 mb-8' },
+                            ['romantic', 'cosmic', 'cute'].map(m => 
+                                React.createElement('button', {
+                                    key: m,
+                                    onClick: () => handleGenerate(m),
+                                    disabled: isGenerating,
+                                    className: 'px-6 py-2 rounded-full border border-white/10 hover:bg-white/10 transition-all'
+                                }, m === 'romantic' ? 'Романтично' : m === 'cosmic' ? 'Космически' : 'Мило')
+                            )
+                        ),
+                        isGenerating ? 
+                            React.createElement(RefreshCw, { className: 'w-8 h-8 mx-auto animate-spin text-yellow-400' }) :
+                            React.createElement('p', { className: 'text-xl font-serif italic leading-relaxed whitespace-pre-wrap' }, poem)
+                    )
+                ),
+
+                // Confession
+                React.createElement('section', { id: 'confession', className: 'py-20 px-6 max-w-3xl mx-auto text-center' },
+                    React.createElement('h2', { className: 'text-5xl font-display font-bold mb-8' }, 'Ты — мой центр ', React.createElement('span', { className: 'gradient-text' }, 'вселенной')),
+                    React.createElement('div', { className: 'space-y-6 text-lg font-serif italic opacity-90' },
+                        React.createElement('p', null, 'Диана, я бесконечно люблю твой голос — он слаще любой музыки. Твоя внешность ослепляет, а характер заставляет восхищаться тобой каждый день.'),
+                        React.createElement('p', null, 'И нет ничего прекраснее мгновений, когда ты смущаешься, озаряя всё вокруг своим нежным светом.'),
+                        React.createElement('p', null, 'Я всегда рядом, мой Сатурн.')
+                    ),
+                    React.createElement('div', { className: 'mt-12 inline-block glass-card px-8 py-4 border-yellow-400/30' },
+                        React.createElement('span', { className: 'tracking-widest uppercase text-sm font-bold' }, 'Люблю тебя бесконечно ❤️')
+                    )
+                ),
+
+                // Footer
+                React.createElement('footer', { className: 'py-12 text-center opacity-30 text-xs' },
+                    React.createElement('p', null, '© 2026 • Специально для Дианы • Твой Сатурн')
+                )
+            );
+        };
+
+        ReactDOM.render(React.createElement(App), document.getElementById('root'));
+    </script>
+</body>
+</html>
